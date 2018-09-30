@@ -1,0 +1,4 @@
+# Third party frameworks
+github "antitypical/Result"
+github "ReactiveX/RxSwift" ~> 4.0
+github "ka-ching-as/FireSwift-Database" "master"
