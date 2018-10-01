@@ -14,8 +14,8 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "3198CEEE2160F42400640052"
-               BuildableName = "libRxFireSwift-Database.a"
+               BlueprintIdentifier = "3198CF1A2161F10B00640052"
+               BuildableName = "RxFireSwift_Database.framework"
                BlueprintName = "RxFireSwift-Database"
                ReferencedContainer = "container:RxFireSwift-Database.xcodeproj">
             </BuildableReference>
@@ -45,8 +45,8 @@
       <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "3198CEEE2160F42400640052"
-            BuildableName = "libRxFireSwift-Database.a"
+            BlueprintIdentifier = "3198CF1A2161F10B00640052"
+            BuildableName = "RxFireSwift_Database.framework"
             BlueprintName = "RxFireSwift-Database"
             ReferencedContainer = "container:RxFireSwift-Database.xcodeproj">
          </BuildableReference>
@@ -63,8 +63,8 @@
       <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "3198CEEE2160F42400640052"
-            BuildableName = "libRxFireSwift-Database.a"
+            BlueprintIdentifier = "3198CF1A2161F10B00640052"
+            BuildableName = "RxFireSwift_Database.framework"
             BlueprintName = "RxFireSwift-Database"
             ReferencedContainer = "container:RxFireSwift-Database.xcodeproj">
          </BuildableReference>
