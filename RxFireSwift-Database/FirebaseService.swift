@@ -80,7 +80,35 @@ extension Result: ResultProtocol {
     public typealias ErrorType = Error
 }
 
-extension Observable where Element: ResultProtocol {
+extension Observable where Element: ResultProtocol, Element.ErrorType == DecodeError {
+
+    public func ifPresent() -> Observable<Element.WrappedType?> {
+        return self.filter { result in
+            switch (result.error, result.value) {
+            case (_, .some), (.some(.noValuePresent), _):
+                // Actual values and 'missing values' are passed through
+                // Other errors are filtered away
+                return true
+            default:
+                return false
+            }
+            }
+            .map { result in
+                return result.value
+        }
+    }
+
+    public func ifPresent(handlingErrors handler: @escaping (Element.ErrorType) -> Void) -> Observable<Element.WrappedType?> {
+        return self
+            .do(onNext: { result in
+                guard let error = result.error else { return }
+                // Don't log 'no value present' errors, they will be treated as proper values
+                if case .noValuePresent = error { return }
+                handler(error)
+            })
+            .ifPresent()
+    }
+
     public func successes() -> Observable<Element.WrappedType> {
         return self.filter { $0.value != nil }.map { $0.value! }
     }
@@ -91,7 +119,6 @@ extension Observable where Element: ResultProtocol {
                 guard let error = result.error else { return }
                 handler(error)
             })
-            .filter { $0.value != nil }
-            .map { $0.value! }
+            .successes()
     }
 }
