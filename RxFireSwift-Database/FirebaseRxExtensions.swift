@@ -23,23 +23,43 @@ extension DecodeResult {
     }
 }
 
-extension Reactive where Base: DatabaseQuery {
-    func observeSingleEvent<T>(of type: DataEventType) -> Single<T> where T: Decodable {
+extension Reactive where Base: Database {
+    func observeSingleEvent<T>(at path: Path<T>, using decoder: StructureDecoder = .init()) -> Single<T> where T: Decodable {
         return Single.create { single in
-            self.base.observeSingleEvent(of: type, with: { (result: DecodeResult<T>) in
+            self.base.observeSingleEvent(at: path, using: decoder, with: { (result: DecodeResult<T>) in
                 single(result.asSingleEvent)
             })
             return Disposables.create()
         }
     }
 
-    func observe<T>(eventType: DataEventType) -> Observable<DecodeResult<T>> where T: Decodable {
+    func observe<T>(at path: Path<T>, using decoder: StructureDecoder = .init()) -> Observable<DecodeResult<T>> where T: Decodable {
         return Observable.create { observer in
-            let handle = self.base.observe(eventType: eventType, with: { (result: DecodeResult<T>) in
+            let handle = self.base.observe(at: path, using: decoder, with: { (result: DecodeResult<T>) in
                 observer.onNext(result)
             })
             return Disposables.create {
-                self.base.removeObserver(withHandle: handle)
+                self.base[path].removeObserver(withHandle: handle)
+            }
+        }
+    }
+
+    func observeSingleEvent<T>(of eventType: CollectionEventType, at path: Path<T>.Collection, using decoder: StructureDecoder = .init()) -> Single<T> where T: Decodable {
+        return Single.create { single in
+            self.base.observeSingleEvent(of: eventType, at: path, using: decoder, with: { (result: DecodeResult<T>) in
+                single(result.asSingleEvent)
+            })
+            return Disposables.create()
+        }
+    }
+
+    func observe<T>(eventType: CollectionEventType, at path: Path<T>.Collection, using decoder: StructureDecoder = .init()) -> Observable<DecodeResult<T>> where T: Decodable {
+        return Observable.create { observer in
+            let handle = self.base.observe(eventType: eventType, at: path, using: decoder, with: { (result: DecodeResult<T>) in
+                observer.onNext(result)
+            })
+            return Disposables.create {
+                self.base[path].removeObserver(withHandle: handle)
             }
         }
     }

@@ -12,59 +12,86 @@ import Foundation
 import Result
 import RxSwift
 
-// A small wrapper so that we prevent the user from calling collection observation with .value
-public enum CollectionEventType {
-    case childAdded, childChanged, childRemoved
-    var firebaseEventType: DataEventType {
-        switch self {
-        case .childAdded:
-            return .childAdded
-        case .childChanged:
-            return .childChanged
-        case .childRemoved:
-            return .childRemoved
-        }
-    }
-}
-
 public class FirebaseService {
-    private let rootRef: DatabaseReference
-    public init(ref: DatabaseReference) {
-        self.rootRef = ref.root
+    public struct DecoderStrategies {
+        var dataDecodingStrategy: StructureDecoder.DataDecodingStrategy
+        var dateDecodingStrategy: StructureDecoder.DateDecodingStrategy
+        var keyDecodingStrategy: StructureDecoder.KeyDecodingStrategy
+        var nonConformingFloatDecodingStrategy: StructureDecoder.NonConformingFloatDecodingStrategy
+    }
+
+    public struct EncoderStrategies {
+        var dataEncodingStrategy: StructureEncoder.DataEncodingStrategy
+        var dateEncodingStrategy: StructureEncoder.DateEncodingStrategy
+        var keyEncodingStrategy: StructureEncoder.KeyEncodingStrategy
+        var nonConformingFloatEncodingStrategy: StructureEncoder.NonConformingFloatEncodingStrategy
+    }
+
+    public var decoderStrategies = DecoderStrategies(dataDecodingStrategy: .deferredToData,
+                                                     dateDecodingStrategy: .deferredToDate,
+                                                     keyDecodingStrategy: .useDefaultKeys,
+                                                     nonConformingFloatDecodingStrategy: .throw)
+
+    public var encoderStrategies = EncoderStrategies(dataEncodingStrategy: .deferredToData,
+                                                     dateEncodingStrategy: .deferredToDate,
+                                                     keyEncodingStrategy: .useDefaultKeys,
+                                                     nonConformingFloatEncodingStrategy: .throw)
+
+    private func createEncoder() -> StructureEncoder {
+        let encoder = StructureEncoder()
+        encoder.dataEncodingStrategy = encoderStrategies.dataEncodingStrategy
+        encoder.dateEncodingStrategy = encoderStrategies.dateEncodingStrategy
+        encoder.keyEncodingStrategy = encoderStrategies.keyEncodingStrategy
+        encoder.nonConformingFloatEncodingStrategy = encoderStrategies.nonConformingFloatEncodingStrategy
+        return encoder
+    }
+
+    private func createDecoder() -> StructureDecoder {
+        let decoder = StructureDecoder()
+        decoder.dataDecodingStrategy = decoderStrategies.dataDecodingStrategy
+        decoder.dateDecodingStrategy = decoderStrategies.dateDecodingStrategy
+        decoder.keyDecodingStrategy = decoderStrategies.keyDecodingStrategy
+        decoder.nonConformingFloatDecodingStrategy = decoderStrategies.nonConformingFloatDecodingStrategy
+        return decoder
+    }
+
+    private let database: Database
+
+    public init(database: Database) {
+        self.database = database
     }
 
     // MARK: Observing Paths
     public func observeSingleEvent<T>(at path: Path<T>) -> Single<T>
         where T: Decodable {
-            return rootRef[path].rx.observeSingleEvent(of: .value)
+            return database.rx.observeSingleEvent(at: path, using: createDecoder())
     }
 
     public func observe<T>(at path: Path<T>) -> Observable<DecodeResult<T>>
         where T: Decodable {
-            return rootRef[path].rx.observe(eventType: .value)
+            return database.rx.observe(at: path, using: createDecoder())
     }
 
     // MARK: Observing Collection Paths
     public func observeSingleEvent<T>(of type: CollectionEventType,
-                               at path: Path<T>) -> Single<T>
+                               at path: Path<T>.Collection) -> Single<T>
         where T: Decodable {
-            return rootRef[path].rx.observeSingleEvent(of: type.firebaseEventType)
+            return database.rx.observeSingleEvent(of: type, at: path, using: createDecoder())
     }
 
     public func observe<T>(eventType type: CollectionEventType,
                     at path: Path<T>.Collection) -> Observable<DecodeResult<T>>
         where T: Decodable {
-            return rootRef[path].rx.observe(eventType: type.firebaseEventType)
+            return database.rx.observe(eventType: type, at: path, using: createDecoder())
     }
 
     // MARK: Adding and Setting
     public func setValue<T>(at path: Path<T>, value: T) throws where T: Encodable {
-        try rootRef[path].setValue(value)
+        try database.setValue(at: path, value: value, using: createEncoder())
     }
 
     public func addValue<T>(at path: Path<T>.Collection, value: T) throws where T: Encodable {
-        let childRef = rootRef[path].childByAutoId()
-        try childRef.setValue(value)
+        try database.addValue(at: path, value: value, using: createEncoder())
     }
 }
 

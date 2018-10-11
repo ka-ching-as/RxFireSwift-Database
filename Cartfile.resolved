@@ -2,4 +2,4 @@ binary "https://dl.google.com/dl/firebase/ios/carthage/FirebaseAnalyticsBinary.j
 binary "https://dl.google.com/dl/firebase/ios/carthage/FirebaseDatabaseBinary.json" "5.4.0"
 github "ReactiveX/RxSwift" "4.3.1"
 github "antitypical/Result" "4.0.0"
-github "ka-ching-as/FireSwift-Database" "41a4e14206b85be861dc63144583b692c0839d84"
+github "ka-ching-as/FireSwift-Database" "1ea2b2313ff154d8380d7eab1cad3c73484eb24c"
