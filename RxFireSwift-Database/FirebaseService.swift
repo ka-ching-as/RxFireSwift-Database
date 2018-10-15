@@ -14,17 +14,17 @@ import RxSwift
 
 public class FirebaseService {
     public struct DecoderStrategies {
-        var dataDecodingStrategy: StructureDecoder.DataDecodingStrategy
-        var dateDecodingStrategy: StructureDecoder.DateDecodingStrategy
-        var keyDecodingStrategy: StructureDecoder.KeyDecodingStrategy
-        var nonConformingFloatDecodingStrategy: StructureDecoder.NonConformingFloatDecodingStrategy
+        public var dataDecodingStrategy: StructureDecoder.DataDecodingStrategy
+        public var dateDecodingStrategy: StructureDecoder.DateDecodingStrategy
+        public var keyDecodingStrategy: StructureDecoder.KeyDecodingStrategy
+        public var nonConformingFloatDecodingStrategy: StructureDecoder.NonConformingFloatDecodingStrategy
     }
 
     public struct EncoderStrategies {
-        var dataEncodingStrategy: StructureEncoder.DataEncodingStrategy
-        var dateEncodingStrategy: StructureEncoder.DateEncodingStrategy
-        var keyEncodingStrategy: StructureEncoder.KeyEncodingStrategy
-        var nonConformingFloatEncodingStrategy: StructureEncoder.NonConformingFloatEncodingStrategy
+        public var dataEncodingStrategy: StructureEncoder.DataEncodingStrategy
+        public var dateEncodingStrategy: StructureEncoder.DateEncodingStrategy
+        public var keyEncodingStrategy: StructureEncoder.KeyEncodingStrategy
+        public var nonConformingFloatEncodingStrategy: StructureEncoder.NonConformingFloatEncodingStrategy
     }
 
     public var decoderStrategies = DecoderStrategies(dataDecodingStrategy: .deferredToData,
